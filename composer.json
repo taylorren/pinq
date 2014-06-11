@@ -1,6 +1,9 @@
 {
     "require": {
         "silex/silex": "~1.1",
+        "twig/twig": ">=1.8,<2.0-dev",
+        "doctrine/dbal": "2.2.*",
+        "symfony/twig-bridge": "~2.3",
         "timetoogo/pinq": "~2.0"
     }
 }

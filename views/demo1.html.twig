@@ -1,0 +1,45 @@
+<html>
+    <body>    
+        <h1>The original data (showing the first 20)</h1>
+        <table>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Page</th>
+            </tr>
+            {% set index=1 %}
+            {% for book in orig %}
+                {% set index=index+1 %}
+                {% if index <= 20 %}
+                    <tr>
+                        <td>{{book.title}}</td>
+                        <td>{{book.author}}</td>
+                        <td>{{book.price}}</td>
+                        <td>{{book.page}}</td>
+                    </tr>
+                {% endif %}                    
+            {% endfor %}
+        </table>
+        <h1>After filtering (price >80)</h1>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Price</th>
+                <th>Page</th>
+            </tr>
+            {% for book in filter1 %}
+                <tr>
+                    <td>{{book.id}}</td>
+                    <td>{{book.title}}</td>
+                    <td>{{book.author}}</td>
+                    <td>{{book.price}}</td>
+                    <td>{{book.page}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
+
