@@ -1,45 +1,61 @@
 <html>
-    <body>    
-        <h1>The original data (showing the first 20)</h1>
-        <table>
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Price</th>
-                <th>Page</th>
-            </tr>
-            {% set index=1 %}
-            {% for book in orig %}
-                {% set index=index+1 %}
-                {% if index <= 20 %}
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <body>   
+        <div class="container">
+            <h1>The original data (showing the first 20)</h1>
+            <table class="table table-striped table-condensed">
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Price</th>
+                    <th>Page</th>
+                </tr>
+                {% set index=1 %}
+                {% for book in orig %}
+                    {% set index=index+1 %}
+                    {% if index <= 20 %}
+                        <tr>
+                            <td>{{book.title}}</td>
+                            <td>{{book.author}}</td>
+                            <td>{{book.price}}</td>
+                            <td>{{book.page}}</td>
+                        </tr>
+                    {% endif %}                    
+                {% endfor %}
+            </table>
+            <h1>After filtering (price > 90 and < 99)</h1>
+            <table class="table table-striped table-condensed">
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Price</th>
+                    <th>Page</th>
+                </tr>
+                {% for book in filter1 %}
                     <tr>
+                        <td>{{book.id}}</td>
                         <td>{{book.title}}</td>
                         <td>{{book.author}}</td>
                         <td>{{book.price}}</td>
                         <td>{{book.page}}</td>
                     </tr>
-                {% endif %}                    
-            {% endfor %}
-        </table>
-        <h1>After filtering (price >80)</h1>
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Price</th>
-                <th>Page</th>
-            </tr>
-            {% for book in filter1 %}
+                {% endfor %}
+            </table>
+            <h3>Author distribution for the above table:</h3>
+            <table class="table table-striped table-condensed">
                 <tr>
-                    <td>{{book.id}}</td>
-                    <td>{{book.title}}</td>
-                    <td>{{book.author}}</td>
-                    <td>{{book.price}}</td>
-                    <td>{{book.page}}</td>
+                    <th>Author</th>
+                    <th>Count</th>
                 </tr>
-            {% endfor %}
-        </table>
+                {% for book in filter2 %}
+                    <tr>
+                        <td>{{book.author}}</td>
+                        <td>{{book.count}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
     </body>
+</body>
 </html>
 
