@@ -5,8 +5,12 @@
             <h2>A mimic faceted search</h2>
             <div class="col col-md-4">
                 <h4>Search Bar</h4>
-                {% set author=facet[0] %}
-                {{author.author}}
+                {% for k, v in facet %}
+                    {{k}}=>
+                    {% for vv in v %}
+                    {{vv.author}}
+                    {%endfor%}
+                {%endfor%}
             </div>
             <div class="col col-md-8">
                 <h4>Results:</h4>
