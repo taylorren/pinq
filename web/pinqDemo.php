@@ -1,11 +1,10 @@
 <?php
 
-use Pinq\ITraversable,
-    Pinq\Traversable;
-
 namespace pinqDemo
 {
-
+    use Pinq\ITraversable,
+        Pinq\Traversable;
+    
     function facetauthor($data)
     {
         $filter = $data
