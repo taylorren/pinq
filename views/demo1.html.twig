@@ -47,11 +47,13 @@
                 <tr>
                     <th>Author</th>
                     <th>Count</th>
+                    <th>Total Price</th>
                 </tr>
                 {% for book in filter2 %}
                     <tr>
                         <td>{{book.author}}</td>
                         <td>{{book.count}}</td>
+                        <td>{{book.sum}}</td>
                     </tr>
                 {% endfor %}
             </table>

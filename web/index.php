@@ -54,17 +54,33 @@ $app->get('/demo1', function () use ($app)
                 return $row['author'];
             })
             ->select(
-            function(ITraversable $filter1)
+                    function(ITraversable $filter1)
+            {
+                return ['author' => $filter1->first()['author'], 'count' => $filter1->count(), 'sum' => $filter1->sum(function($row)
+                    {
+                        return $row['price'];
+                    }
+                    )
+                ];
+            }
+            )
+            ->orderByAscending(function($row)
     {
-        return ['author' => $filter1->first()['author'], 'count' => $filter1->count()];
-    }
-    );
+        return $row['sum'];
+    });
 
-    //var_dump($filter2);
-    //return $app['twig']->render('demo1.html.twig', array('books'=>$books));
-    return $app['twig']->render('demo1.html.twig', array('orig' => $data, 'filter1' => $filter1, 'filter2'=>$filter2));
+    return $app['twig']->render('demo1.html.twig', array('orig' => $data, 'filter1' => $filter1, 'filter2' => $filter2));
 }
 );
+
+$app->get('demo2', function () use ($app)
+{
+    global $demo;
+    $test2=new pinqDemo\Demo($app);
+    return $test2->test2($app, $demo->test1($app));
+}
+);
+
 
 $demo = new pinqDemo\Demo($app);
 
