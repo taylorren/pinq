@@ -90,7 +90,7 @@ namespace pinqDemo
         {
             $data = \Pinq\Traversable::from($originalData);
             $facet = $this->getFacet($data);
-            
+
             $filter = null;
 
             if ($key == 'author')
@@ -108,15 +108,26 @@ namespace pinqDemo
             }
             elseif ($key == 'price')
             {
-                echo "Facet by Price";
-                die();
+                $filter = $data
+                        ->where(function($row) use ($value)
+                        {
+                            $lo=floor($value/10)*10;
+                            $hi=$lo+10;
+                            
+                            return $row['price'] < $hi && $row['price']>=$lo;
+                        })
+                        ->orderByAscending(function($row) use ($key)
+                {
+                    return $row['title'];
+                })
+                ;
             }
             else //$key==title
             {
                 $filter = $data
                         ->where(function($row) use ($value)
                         {
-                            return $value==substr($row['title'], 0,6).'...';
+                            return $value == substr($row['title'], 0, 6) . '...';
                         })
                         ->orderByAscending(function($row) use ($key)
                 {
@@ -124,7 +135,7 @@ namespace pinqDemo
                 })
                 ;
             }
-            
+
             return $app['twig']->render('demo2.html.twig', array('facet' => $facet, 'data' => $filter));
         }
 
