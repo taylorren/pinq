@@ -76,8 +76,16 @@ $app->get('/demo1', function () use ($app)
 $app->get('demo2', function () use ($app)
 {
     global $demo;
-    $test2=new pinqDemo\Demo($app);
+    $test2 = new pinqDemo\Demo($app);
     return $test2->test2($app, $demo->test1($app));
+}
+);
+
+$app->get('demo2/facet/{key}/{value}', function ($key, $value) use ($app)
+{
+    global $demo;
+    $test3 = new pinqDemo\Demo($app);
+    return $test3->test3($app, $demo->test1($app), $key, $value);
 }
 );
 
