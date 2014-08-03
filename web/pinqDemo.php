@@ -6,62 +6,69 @@ namespace pinqDemo
     use Pinq\ITraversable,
         Pinq\Traversable;
 
-    function facettitle($data)
+    class Facet
     {
-        $filter = $data
-                ->groupBy(function($row)
-                {
-                    return substr($row['title'], 0, 6);
-                })
-                ->select(function(ITraversable $data)
+
+        public $data; // Original data
+        public $key; // the field to be grouped on
+        public $type; // F: full string; S: start of a string; R: range;
+        public $range; // Only valid if $type is not F
+        
+        public function __construct($d, $k, $t, $r = '')
         {
-            return ['key' => substr($data->first()['title'], 0, 6) . '...', 'count' => $data->count()];
-        });
+            $this->data = $d;
+            $this->key = $k;
+            $this->type = $t;
+            $this->range = $r;
+        }
 
-        return $filter;
-    }
-
-    function facetauthor($data)
-    {
-        $filter = $data
-                ->groupBy(function($row)
-                {
-                    return $row['author'];
-                })
-                ->select(
-                        function(ITraversable $data)
-                {
-                    return ['key' => $data->first()['author'], 'count' => $data->count()];
-                })
-                ->orderByAscending(function($row)
+        public function getFacet()
         {
-            return $row['key'];
-        })
-        ;
+            $filter = '';
 
-        return $filter;
-    }
-
-    function facetprice($data)
-    {
-        $filter = $data
-                ->groupBy(function($row)
+            if ($this->type == 'F') // Full string 
+            {
+                $filter = $this->data
+                        ->groupBy(function($row)
+                        {
+                            return $row[$this->key];
+                        }
+                        )
+                        ->select(function(ITraversable $data)
                 {
-                    return floor($row['price'] / 10) * 10;
-                })
-                ->select(
-                        function(ITraversable $data)
-                {
-                    return ['key' => $data->last()['price'], 'count' => $data->count()];
+                    return ['key' => $data->first()[$this->key], 'count' => $data->count()];
                 }
-                )
-                ->orderByAscending(function($row)
-        {
-            return $row['key'];
-        })
-        ;
+                        )
+                ;
+            }
+            elseif ($this->type == "S") //Start of string
+            {
+                $filter = $this->data
+                        ->groupBy(function($row)
+                        {
+                            return substr($row[$this->key], 0, $this->range);
+                        })
+                        ->select(function (ITraversable $data)
+                {
+                    return ['key' => substr($data->first()[$this->key], 0, $this->range) . '...', 'count' => $data->count()];
+                });
+            }
+            elseif ($this->type = "R") // A value range
+            {
+                $filter = $this->data
+                        ->groupBy(function($row)
+                        {
+                            return floor($row[$this->key] / $this->range) * $this->range;
+                        })
+                        ->select(function (ITraversable $data)
+                {
+                    return ['key' => $data->last()[$this->key], 'count' => $data->count()];
+                });
+            }
+            
+            return $filter;
+        }
 
-        return $filter;
     }
 
     class Demo
@@ -111,14 +118,14 @@ namespace pinqDemo
                 $filter = $data
                         ->where(function($row) use ($value)
                         {
-                            $lo=floor($value/10)*10;
-                            $hi=$lo+10;
-                            
-                            return $row['price'] < $hi && $row['price']>=$lo;
+                            $lo = floor($value / 10) * 10;
+                            $hi = $lo + 10;
+
+                            return $row['price'] < $hi && $row['price'] >= $lo;
                         })
                         ->orderByAscending(function($row) use ($key)
                 {
-                    return $row['title'];
+                    return $row['author'];
                 })
                 ;
             }
@@ -145,19 +152,14 @@ namespace pinqDemo
 
             $data = \Pinq\Traversable::from($originalData);
 
-            $keys = ['author', 'price', 'title']; // Can be passed to this class from outside instead of fixed in a more flexible solution
+            // 3 samples on constructing different Facet objects and return the facet
+            $filter1 = new \pinqDemo\Facet($data, 'author', 'F');
+            $filter2 = new \pinqDemo\Facet($data, 'title', 'S', 6);
+            $filter3 = new \pinqDemo\Facet($data, 'price', 'R', 10);
 
-            foreach ($keys as $key)
-            {
-                $funcName = '\pinqDemo\facet' . $key;
-
-                if (function_exists($funcName))
-                {
-                    $filter = call_user_func($funcName, $data);
-                    $facet[$key] = $filter;
-                }
-            }
-
+            $facet[$filter1->key] = $filter1->getFacet();
+            $facet[$filter2->key] = $filter2->getFacet();
+            $facet[$filter3->key] = $filter3->getFacet();
             return $facet;
         }
 
